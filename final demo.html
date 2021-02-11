@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Demo</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+  <div class="container">&nbsp;&nbsp;
+    <div class="alert alert-danger alert-dismissible fade in" id="alert1" style="display: none;">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      <p id="alert"></p>
+    </div>
+    <form class="form-horizontal" id="formname" action="">&nbsp;
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="name">Name:</label>
+        <div class="col-sm-5">
+          <input type="text" class="form-control" id="name" placeholder="Enter name" name="name">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="email">Email:</label>
+        <div class="col-sm-5">
+          <input type="email" class="form-control" id="email" placeholder="Enter email" name="email">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="gender" aria-checked="true">Gender:</label>
+        <div class="col-sm-5 radio">
+          <label><input type="radio" name="optradio" value="male" checked>Male</label>
+          <label><input type="radio" name="optradio" value="female">Female</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="hobbies">Hobbies:</label>
+        <div class="col-sm-5 checkbox">
+          <label><input type="checkbox" value="Reading" name="chechbox" id="Reading">Reading</label>
+          <label><input type="checkbox" value="Dancing" name="chechbox" id="Dancing">Dancing</label>
+          <label><input type="checkbox" value="Traveling" name="chechbox" id="Traveling">Traveling</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="age">Age:</label>
+        <div class="col-sm-5">
+          <input type="number" class="form-control" id="age" placeholder="Enter age" name="age">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="state">State:</label>
+        <div class="col-sm-5">
+          <select class="form-control" style="width:auto;" id="state" name="state">
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="city">city:</label>
+        <div class="col-sm-5">
+          <select class="form-control" style="width:auto;" id="city" name="city">
+
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="button" class="btn btn-primary" id="btnSubmit">Submit</button>
+          <button type="button" class="btn btn-primary" id="update" onclick="updateF()"
+            style="display: none;">update</button>
+          <button type="cancel" class="btn btn-primary" onclick="resetForm()" id="cancel"
+            style="display:none">cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <center>
+    <input id="find" class="search" type="text" placeholder="Search by Name.." style="text-align: center;">
+    <br><br>
+    <label>Sort by Name:-</label>
+    <select id="selectionOrder">
+      <option value="nameAsc">Ascending</option>
+      <option value="nameDesc">Descending</option>
+    </select>
+    <br>
+    <table class="table table-bordered" id="tableData" style="width: 70%;">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Gender</th>
+          <th>Hobby</th>
+          <th>Age</th>
+          <th>State</th>
+          <th>City</th>
+          <th>time</th>
+          <th>Edit</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody id="tblPerson">
+
+      </tbody>
+    </table>
+  </center>
+</body>
+
+</html>
+
+<script>
+  var person = [{ id: 1, name: "mahesh", email: "mahesh@gmail.com", gender: "male", hobby: ["Dancing"], age: 20, state: 1, city: 1, time: addTime() },
+  { id: 2, name: "milan", email: "milan@gmail.com", gender: "male", hobby: ["Reading"], age: 22, state: 1, city: 1, time: addTime() }];
+
+  const states = [
+    { s_id: 1, name: 'gujarat' },
+    { s_id: 2, name: 'maharastra' }
+  ];
+
+  const cities = [
+    { c_id: 1, name: 'Surat', stateId: 1 },
+    { c_id: 2, name: 'Vadodara', stateId: 1 },
+    { c_id: 3, name: 'Bombay', stateId: 2 },
+    { c_id: 4, name: 'Pune', stateId: 2 },
+    { c_id: 5, name: 'Ahemdabad', stateId: 1 },
+    { c_id: 6, name: 'Mumbai', stateId: 2 }
+  ];
+
+  var defaulthobbies = ["Reading", "Dancing", "Traveling"]
+
+  function addTime() {
+    var d = new Date();
+    var t = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+    return t;
+  }
+  function fillTable() {
+    $("#tblPerson").empty();
+    $.each(person, function (key, value) {
+      addObject(value)
+    });
+
+  }
+  function valiDate() {
+    var txtName = $("#name").val();
+    var txtEmail = $("#email").val();
+    var txtRedio = $('input[name="optradio"]:checked').val();
+    var hobbies = [];
+    $.each($('input[name="chechbox"]:checked'), function () {
+      hobbies.unshift(this.value);
+      // console.log(this.value);
+    })
+    // console.log(hobbies);
+    var txtAge = $("#age").val();
+    var txtState = $("#state").val();
+    var txtCity = $("#city").val();
+    // console.log(txtState);
+
+    if (txtName == "") {
+      $("#alert").html("Name is required");
+      $("#alert1").show();
+      return false;
+    }
+    $("#alert").html("");
+
+    if (txtEmail.length < 1) {
+      $("#alert").html('please enter your email');
+      $("#alert1").show();
+      return false;
+    }
+    var regEx = /^([\w\.\-]+)@([\w\-]+)((\.(\w){2,9})+)$/;
+    var validEmail = regEx.test(txtEmail);
+    if (!validEmail) {
+      $("#alert").html('Enter a valid email');
+      $("#alert1").show();
+      return false;
+    }
+    $("#alert").html("");
+
+    if (hobbies == "") {
+      $("#alert").html('Please select hobbies');
+      $("#alert1").show();
+      return false;
+    }
+    $("#alert").html("");
+
+    if (txtAge < 19) {
+      $("#alert").html('Age must be over 18');
+      $("#alert1").show();
+      return false;
+    }
+    $("#alert").html("");
+
+    if (txtState == "") {
+      $("#alert").html('Please select state');
+      $("#alert1").show();
+      return false;
+    }
+    $("#alert").html("");
+
+    if (txtCity == "") {
+      $("#alert").html('Please select city');
+      $("#alert1").show();
+      return false;
+    } $("#alert").html("");
+
+    return true;
+
+  }
+
+  function addObject(value) {
+    // console.log(value);
+    var objState = states.find(function (obj) {
+      //console.log('obj :>> ', obj);
+      if (obj.s_id == value.state) {
+        return obj;
+      }
+    });
+    // console.log('objState :>> ', objState);
+    var objCity = cities.find(function (obj) {
+      if (obj.c_id == value.city) {
+        return obj;
+      }
+    });
+    //console.log(objState);
+    $("#tblPerson").append('<tr id="findId">' +
+      '<td>' + value.id + '</td>' +
+      '<td>' + value.name + '</td>' +
+      '<td>' + value.email + '</td>' +
+      '<td>' + value.gender + '</td>' +
+      '<td>' + value.hobby + '</td>' +
+      '<td>' + value.age + '</td>' +
+      '<td>' + objState.name + '</td>' +
+      '<td>' + objCity.name + '</td>' +
+      '<td>' + value.time + '</td>' +
+      '<td> <input id="btnEdit" type="button" value="edit" data-id = ' + value.id + '> </td>' +
+      '<td> <input id="btnDelete" type="button" value="delete" data-id = ' + value.id + ' > </td>' +
+      '</tr>');
+  }
+
+  // to set city by state
+  function setCity(icity) {
+    const stateId = $('#state').val();
+    console.log(stateId);
+    const selectedCities = cities.filter(function (obj) {
+      if (obj.stateId == stateId) {
+        return obj;
+      }
+      return null;
+    });
+    console.log(selectedCities);
+    // console.log(icity);
+    $('#city').empty();
+    $('#city').append("<option value=''>--Select City--</option>");
+    $.each(selectedCities, function (key, obj) {
+      // console.log(obj);
+      let selected = ""
+      if (icity == obj.c_id) {
+        selected = "selected"
+      }
+      $('#city').append(
+        "<option value=" + obj.c_id + " " + selected + ">" + obj.name + "</option>"
+      );
+    });
+  }
+
+
+  $(document).ready(function () {
+
+    //  Submit Prevent
+    $("form").submit(function (e) {
+      e.preventDefault();
+    });
+
+    // Task 2 fill table
+    fillTable();
+    // Task 3
+    $('#state').append("<option value=>--Select State--</option>");
+
+    $.each(states, function (key, obj) {
+      $('#state').append(
+        "<option value=" + obj.s_id + ">" + obj.name + "</option>"
+      );
+    });
+    $('#city').append("<option value=''>--Select City--</option>");
+
+    $('#state').change(function () {
+      setCity();
+    });
+
+    $('.search').keyup(function () {
+      search_table($(this).val());
+    });
+    function search_table(value) {
+     // console.log('value :>> ', value);
+      $('#tableData tbody tr').each(function () {
+        console.log($(this));
+        console.log('---name--',$(this).find("td:eq(1)").text());
+        
+        if ($(this).find("td:eq(1)").text().toLowerCase().indexOf(value.toLowerCase()) >= 0) {
+          $(this).show();
+        }
+        else {
+          $(this).hide();
+        }
+      });
+    }
+
+    $("#selectionOrder").change(function () {
+      // sorting ascending & descending
+      var x = $(this).val();
+      console.log(x);
+      person = person.sort(compare);
+      console.log(person);
+
+      function compare(a, b) {
+        if (x == "nameAsc") {
+          if (a.name < b.name) {
+            return -1;
+          }
+          else {
+            return 1;
+          }
+        } else {
+          if (a.name > b.name) {
+            return -1;
+          }
+          else {
+            return 1;
+          }
+        }
+      }
+      fillTable();
+    });
+
+    $("#btnSubmit").click(function () {
+
+      // console.log(valiDate());
+      if (valiDate() == true) {
+        var txtName = $("#name").val();
+        var txtEmail = $("#email").val();
+        var txtRedio = $('input[name="optradio"]:checked').val();
+        var hobbies = [];
+        $.each($('input[name="chechbox"]:checked'), function () {
+          hobbies.unshift(this.value);
+        })
+        // console.log(hobbies);
+        var txtAge = $("#age").val();
+        var txtState = $("#state").val();
+        var txtCity = $("#city").val();
+
+        let newPerson = {
+          id: person.length + 1,
+          name: txtName,
+          email: txtEmail,
+          gender: txtRedio,
+          hobby: hobbies,
+          age: txtAge,
+          state: txtState,
+          city: txtCity,
+          time: addTime()
+        }
+        person.push(newPerson);
+        addObject(newPerson);
+
+        $("#formname")[0].reset();
+        $("#alert1").hide();
+      }
+    });
+    // return data in form
+    $("tbody").on('click', '#btnEdit', function () {
+
+      var a = $(this).attr("data-id");
+      i = person.findIndex(obj => obj.id == a);
+      $("#update").data('index', i)
+
+      $('#btnSubmit').hide();
+      $('#update').show();
+      $('#cancel').show();
+
+      var newObject = person[i];
+      console.log(newObject);
+
+      $("#name").val(newObject.name);
+      $("#email").val(newObject.email);
+      $("input[name=optradio][ value=" + newObject.gender + "]").prop('checked', true);
+      var hobbiesarray = newObject.hobby;
+      // console.log(hobbiesarray);
+      $.each(defaulthobbies, function (index, value) {
+        if (hobbiesarray.includes(value)) {
+          $("#" + value).prop("checked", true);
+        }
+        else {
+          $("#" + value).prop("checked", false);
+        }
+        // console.log(index + '==== ' + value);
+      });
+
+      $("#age").val(newObject.age);
+      $("#state").val(newObject.state);
+      setCity(newObject.city);
+      
+      // $("#city").val(newObject.city);
+    });
+
+    // delete the object from array
+    $("tbody").on('click', '#btnDelete', function () {
+      var d = $(this).attr("data-id");
+      var c = person.find(std => std.id == d).id;
+      person.splice(c - 1, 1);
+      $(this).parents("tr").remove();
+      // console.log(person);
+    });
+  });
+
+  function updateF() {
+
+    if (valiDate() == true) {
+      let index = $("#update").data('index');
+      console.log(index)
+      person[index].name = $("#name").val();
+      person[index].email = $("#email").val();
+      person[index].gender = $('input[name="optradio"]:checked').val();
+      let hobbies = [];
+      $.each($('input[name="chechbox"]:checked'), function () {
+        hobbies.unshift(this.value);
+        // console.log(this.value);
+      })
+      person[index].hobby = hobbies;
+      // console.log(hobbies); 
+      person[index].age = $("#age").val();
+      person[index].state = $("#state").val();
+      person[index].city = $("#city").val();
+
+      fillTable();
+      setCity();
+      $("#formname")[0].reset();
+      $("#update").hide();
+      $("#cancel").hide();
+      $("#btnSubmit").show();
+      $("#alert1").hide();
+    }
+  };
+
+  function resetForm() {
+    $("#formname")[0].reset();
+    $("#update").hide();
+    $("#cancel").hide();
+    $("#btnSubmit").show();
+    setCity();
+  }
+
+</script>
